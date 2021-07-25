@@ -1,0 +1,28 @@
+library(survival)
+#3 parts of dataframe
+mismatchlevel<-cut(stanford2$t5, breaks=3, labels = c(0, 1, 2))
+over40<-cut(stanford2$age, breaks=c(-Inf,40,Inf), labels=c(0,1))
+stan<-cbind(stanford2, mismatchlevel, over40)
+
+# remove any rows that have missing values (this part important for anova)
+numbermissing<-apply(stan, 1, function(x) sum(is.na(x)))
+nonemissing<-numbermissing==0
+newstan<-stan[nonemissing,]
+
+
+#make it factor
+newstan$over40 = as.factor(newstan$over40)
+newstan$mismatchlevel = as.factor(newstan$mismatchlevel)
+
+#from LRT we can tell that mismatchlevel is not significant enough
+cox.mod <-coxph(Surv(newstan$time, newstan$status) ~ newstan$over40+newstan$mismatchlevel)
+cox.mod2 <-coxph(Surv(newstan$time, newstan$status) ~ newstan$over40)
+anova(cox.mod2,cox.mod,test="LRT")
+
+
+#use numeric variables instead of categorical
+cox.num <-coxph(Surv(newstan$time, newstan$status) ~ newstan$age+newstan$t5)
+summary(cox.num)
+
+
+summary(cox.mod)
