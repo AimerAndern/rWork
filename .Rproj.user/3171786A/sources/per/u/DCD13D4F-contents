@@ -26,3 +26,23 @@ summary(cox.num)
 
 
 summary(cox.mod)
+predict(cox.num)
+library(car)
+cox.n
+#linearity check
+plot(predict(cox.num),residuals(cox.num,type="martingale"),xlab="fitted values", ylab="martingale residuals",
+     main="residual plot", las = 1)
+abline(h=0)
+
+lines(smooth.spline(predict(cox.num),
+                    residuals(cox.num,type="deviance")),col="red")
+cox.zph(cox.num)
+
+
+par(mfrow=c(1,1))
+plot(cox.zph(cox.num)[1])
+abline(h=0,col=2)
+
+par(mfrow=c(1,1))
+plot(cox.zph(cox.num)[2])
+abline(h=0,col=2)
